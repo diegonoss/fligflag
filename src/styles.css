@@ -132,6 +132,37 @@ body {
   outline-offset: 2px;
 }
 
+#settings-panel label input[type="checkbox"] {
+  margin-right: 8px;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+#debug-answer-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 12px;
+  min-height: 44px;
+}
+
+#debug-answer-button:hover {
+  background: #c0392b;
+}
+
+#debug-answer-button:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 #results-panel {
   position: absolute;
   top: 50%;

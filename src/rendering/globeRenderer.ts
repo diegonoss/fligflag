@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { latLonToVector3, vector3ToLatLon } from '../geo/coordinates'
-import type { LatLon } from '../domain/types'
+import type { LatLon, CountryTarget } from '../domain/types'
 
 export class GlobeRenderer {
   private scene: THREE.Scene
@@ -12,6 +12,8 @@ export class GlobeRenderer {
   private earth: THREE.Mesh
   private onClickCallback?: (latLon: LatLon) => void
   private pointerStart: { x: number; y: number; time: number } | null = null
+  private delimiterLines: THREE.LineSegments | null = null
+  private answerMarker: THREE.Mesh | null = null
 
   constructor(container: HTMLElement) {
     this.scene = new THREE.Scene()
@@ -36,14 +38,13 @@ export class GlobeRenderer {
 
     this.raycaster = new THREE.Raycaster()
 
-    const geometry = new THREE.SphereGeometry(1, 64, 64)
+    const geometry = new THREE.SphereGeometry(1, 128, 64)
     const textureLoader = new THREE.TextureLoader()
     const texture = textureLoader.load(
-      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg',
-      () => {
-        texture.colorSpace = THREE.SRGBColorSpace
-      }
+      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg'
     )
+    texture.colorSpace = THREE.SRGBColorSpace
+    texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy()
     const material = new THREE.MeshPhongMaterial({
       map: texture,
       shininess: 5,
@@ -125,7 +126,86 @@ export class GlobeRenderer {
     return this.scene
   }
 
+  public setCountryDelimiters(targets: CountryTarget[], enabled: boolean): void {
+    this.clearDelimitersLines()
+    if (!enabled) return
+
+    const vertices: number[] = []
+    const borderRadius = 1.003
+
+    for (const target of targets) {
+      const geometry = target.geometry.geometry
+      const rings = this.extractRings(geometry)
+      for (const ring of rings) {
+        for (let i = 0; i < ring.length - 1; i++) {
+          const coordA = ring[i]
+          const coordB = ring[i + 1]
+          if (!coordA || coordA.length < 2 || !coordB || coordB.length < 2) continue
+          const a = latLonToVector3({ lat: coordA[1]!, lon: coordA[0]! }, borderRadius)
+          const b = latLonToVector3({ lat: coordB[1]!, lon: coordB[0]! }, borderRadius)
+          vertices.push(a.x, a.y, a.z, b.x, b.y, b.z)
+        }
+      }
+    }
+
+    const bufferGeometry = new THREE.BufferGeometry()
+    bufferGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+    const material = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.4, transparent: true })
+    this.delimiterLines = new THREE.LineSegments(bufferGeometry, material)
+    this.scene.add(this.delimiterLines)
+  }
+
+  public showAnswerMarker(latLon: LatLon): void {
+    this.clearAnswerMarker()
+    const position = latLonToVector3(latLon, 1.01)
+    const geometry = new THREE.SphereGeometry(0.02, 16, 16)
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    this.answerMarker = new THREE.Mesh(geometry, material)
+    this.answerMarker.position.copy(position)
+    this.scene.add(this.answerMarker)
+  }
+
+  public clearAnswerMarker(): void {
+    if (this.answerMarker) {
+      this.scene.remove(this.answerMarker)
+      this.answerMarker.geometry.dispose()
+      if (this.answerMarker.material instanceof THREE.Material) {
+        this.answerMarker.material.dispose()
+      }
+      this.answerMarker = null
+    }
+  }
+
+  private clearDelimitersLines(): void {
+    if (this.delimiterLines) {
+      this.scene.remove(this.delimiterLines)
+      this.delimiterLines.geometry.dispose()
+      if (this.delimiterLines.material instanceof THREE.Material) {
+        this.delimiterLines.material.dispose()
+      }
+      this.delimiterLines = null
+    }
+  }
+
+  private extractRings(geometry: GeoJSON.Geometry): number[][][] {
+    if (geometry.type === 'Polygon') {
+      return geometry.coordinates as number[][][]
+    }
+    if (geometry.type === 'MultiPolygon') {
+      return (geometry.coordinates as number[][][][]).flat()
+    }
+    return []
+  }
+
   public dispose(): void {
+    this.clearAnswerMarker()
+    this.clearDelimitersLines()
+    if (this.earth.geometry) this.earth.geometry.dispose()
+    const earthMaterial = this.earth.material
+    if (earthMaterial instanceof THREE.MeshPhongMaterial) {
+      if (earthMaterial.map) earthMaterial.map.dispose()
+      earthMaterial.dispose()
+    }
     this.renderer.dispose()
     this.controls.dispose()
   }

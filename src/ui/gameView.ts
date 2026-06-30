@@ -5,12 +5,19 @@ export class GameView {
   private timerDisplay: HTMLElement
   private scoreDisplay: HTMLElement
   private roundDisplay: HTMLElement
+  private debugButton: HTMLElement
+  private debugCallback?: () => void
 
   constructor() {
     this.flagDisplay = document.getElementById('flag-display')!
     this.timerDisplay = document.getElementById('timer-display')!
     this.scoreDisplay = document.getElementById('score-display')!
     this.roundDisplay = document.getElementById('round-display')!
+    this.debugButton = document.getElementById('debug-answer-button')!
+    this.debugButton.style.display = 'none'
+    this.debugButton.addEventListener('click', () => {
+      if (this.debugCallback) this.debugCallback()
+    })
   }
 
   public showFlag(url: string, alt: string): void {
@@ -25,9 +32,9 @@ export class GameView {
     this.flagDisplay.innerHTML = ''
   }
 
-  public showCountryName(name: string): void {
+  public showTargetHint(text: string): void {
     const div = document.createElement('div')
-    div.textContent = name
+    div.textContent = text
     this.flagDisplay.appendChild(div)
   }
 
@@ -54,5 +61,13 @@ export class GameView {
   public update(state: GameState): void {
     this.updateScore(state.totalScore)
     this.updateRound(state.currentRound, state.config.rounds)
+  }
+
+  public onDebugAnswer(callback: () => void): void {
+    this.debugCallback = callback
+  }
+
+  public setDebugButtonVisible(visible: boolean): void {
+    this.debugButton.style.display = visible ? 'block' : 'none'
   }
 }

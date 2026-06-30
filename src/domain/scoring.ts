@@ -9,7 +9,8 @@ export function calculateScore(
   guess: LatLon,
   target: LatLon,
   difficulty: Difficulty,
-  secondsLeft: number
+  secondsLeft: number,
+  scoreMultiplier: number = 1
 ): ScoreBreakdown {
   const distanceKm = distance(
     point([guess.lon, guess.lat]),
@@ -17,8 +18,11 @@ export function calculateScore(
     { units: 'kilometers' }
   )
 
-  const baseScore = calculateBaseScore(distanceKm)
-  const timeBonus = calculateTimeBonus(baseScore, difficulty, secondsLeft)
+  const rawBaseScore = calculateBaseScore(distanceKm)
+  const rawTimeBonus = calculateTimeBonus(rawBaseScore, difficulty, secondsLeft)
+
+  const baseScore = Math.floor(rawBaseScore * scoreMultiplier)
+  const timeBonus = Math.floor(rawTimeBonus * scoreMultiplier)
   const totalScore = baseScore + timeBonus
 
   return {

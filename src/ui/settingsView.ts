@@ -36,6 +36,12 @@ export class SettingsView {
           <option value="50">50</option>
         </select>
       </div>
+      <div>
+        <label>
+          <input type="checkbox" id="country-delimiters" />
+          Show country borders (score reduced to 75%)
+        </label>
+      </div>
       <button id="start-game">Start Game</button>
     `
 
@@ -47,6 +53,7 @@ export class SettingsView {
     const difficulty = (document.getElementById('difficulty') as HTMLSelectElement).value as Difficulty
     const mode = (document.getElementById('mode') as HTMLSelectElement).value as GameMode
     const rounds = parseInt((document.getElementById('rounds') as HTMLSelectElement).value, 10)
+    const showCountryDelimiters = (document.getElementById('country-delimiters') as HTMLInputElement).checked
 
     if (![5, 10, 20, 50].includes(rounds)) {
       alert('Invalid rounds count')
@@ -54,7 +61,7 @@ export class SettingsView {
     }
 
     if (this.onStartCallback) {
-      this.onStartCallback({ difficulty, mode, rounds })
+      this.onStartCallback({ difficulty, mode, rounds, showCountryDelimiters })
     }
   }
 

@@ -4,7 +4,7 @@ import { GameView } from '../ui/gameView'
 import { SettingsView } from '../ui/settingsView'
 import { loadCountries } from '../data/loadCountries'
 import type { CountryRecord } from '../data/countryTypes'
-import { createGame, startGame, startRound, submitGuess, advanceRound } from '../domain/gameEngine'
+import { createGame, startGame, startRound, submitGuess, advanceRound, getTargetLatLon } from '../domain/gameEngine'
 import { getDifficultyConfig } from '../domain/difficulty'
 import type { GameConfig, GameState, CountryTarget, LatLon } from '../domain/types'
 
@@ -27,6 +27,7 @@ export class AppController {
 
     this.settingsView.onStart((config) => this.startGame(config))
     this.globeRenderer.onClick((latLon) => this.handleGlobeClick(latLon))
+    this.gameView.onDebugAnswer(() => this.handleDebugAnswer())
   }
 
   public async init(): Promise<void> {
@@ -53,6 +54,7 @@ export class AppController {
     this.gameState = createGame(config)
     this.gameState = startGame(this.gameState, targets)
     this.settingsView.hide()
+    this.globeRenderer.setCountryDelimiters(targets, config.showCountryDelimiters)
     this.startCurrentRound()
   }
 
@@ -63,13 +65,19 @@ export class AppController {
     const round = this.gameState.rounds[this.gameState.currentRound]
     if (!round) return
 
+    this.globeRenderer.clearAnswerMarker()
     this.gameView.update(this.gameState)
     this.gameView.showFlag(round.target.flagUrl, `Flag of ${round.target.name}`)
+    this.gameView.setDebugButtonVisible(true)
 
     const config = getDifficultyConfig(this.gameState.config.difficulty)
 
-    if (this.gameState.config.mode === 'country' && this.gameState.config.difficulty === 'easy') {
-      this.gameView.showCountryName(round.target.name)
+    if (this.gameState.config.difficulty === 'easy') {
+      if (this.gameState.config.mode === 'country') {
+        this.gameView.showTargetHint(round.target.name)
+      } else {
+        this.gameView.showTargetHint(`${round.target.capital}, ${round.target.name}`)
+      }
     }
 
     if (config.flagVisibleSeconds !== null) {
@@ -153,8 +161,21 @@ export class AppController {
     }
   }
 
+  private handleDebugAnswer(): void {
+    if (!this.gameState || this.gameState.phase !== 'playing') return
+
+    const round = this.gameState.rounds[this.gameState.currentRound]
+    if (!round) return
+
+    const targetLatLon = getTargetLatLon(round.target, this.gameState.config.mode)
+    this.globeRenderer.showAnswerMarker(targetLatLon)
+  }
+
   private showResults(): void {
     if (!this.gameState) return
+
+    this.gameView.setDebugButtonVisible(false)
+    this.globeRenderer.clearAnswerMarker()
 
     const resultsPanel = document.getElementById('results-panel')!
     resultsPanel.innerHTML = `

@@ -23,6 +23,7 @@ export interface GameConfig {
   mode: GameMode
   difficulty: Difficulty
   rounds: number
+  showCountryDelimiters: boolean
 }
 
 export interface Round {

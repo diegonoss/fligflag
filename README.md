@@ -28,7 +28,7 @@ npm run test:watch # Run tests in watch mode
 
 ### Difficulty Modes
 
-- **Easy**: No timer, country name shown
+- **Easy**: No timer, country name shown (capital mode shows capital + country name)
 - **Normal**: 30 second countdown
 - **Hard**: 10 second countdown, flag hidden after 3 seconds
 
@@ -36,6 +36,14 @@ npm run test:watch # Run tests in watch mode
 
 - **Country**: Guess the country location
 - **Capital**: Guess the capital city location
+
+### Country Borders
+
+Toggle country border overlay in settings. When enabled, score is reduced to 75%.
+
+### Debug
+
+During gameplay, click "Show Answer" to reveal the correct answer location on the globe.
 
 ### Scoring
 

@@ -41,4 +41,27 @@ describe('scoring', () => {
     const result = calculateScore(guess, targetLatLon, 'normal', 10)
     expect(result.totalScore).toBe(result.baseScore + result.timeBonus)
   })
+
+  it('applies score multiplier to base score', () => {
+    const guess: LatLon = { lat: 40.4168, lon: -3.7038 }
+    const result = calculateScore(guess, targetLatLon, 'easy', 0, 0.75)
+    expect(result.baseScore).toBe(750)
+  })
+
+  it('applies score multiplier to time bonus', () => {
+    const guess: LatLon = { lat: 40.4168, lon: -3.7038 }
+    const withoutMultiplier = calculateScore(guess, targetLatLon, 'normal', 10)
+    const withMultiplier = calculateScore(guess, targetLatLon, 'normal', 10, 0.75)
+    expect(withMultiplier.baseScore).toBe(Math.floor(withoutMultiplier.baseScore * 0.75))
+    expect(withMultiplier.timeBonus).toBe(Math.floor(withoutMultiplier.timeBonus * 0.75))
+    expect(withMultiplier.totalScore).toBe(withMultiplier.baseScore + withMultiplier.timeBonus)
+  })
+
+  it('defaults multiplier to 1 when not provided', () => {
+    const guess: LatLon = { lat: 40.4168, lon: -3.7038 }
+    const defaultResult = calculateScore(guess, targetLatLon, 'easy', 0)
+    const explicitResult = calculateScore(guess, targetLatLon, 'easy', 0, 1)
+    expect(defaultResult.baseScore).toBe(explicitResult.baseScore)
+    expect(defaultResult.totalScore).toBe(explicitResult.totalScore)
+  })
 })

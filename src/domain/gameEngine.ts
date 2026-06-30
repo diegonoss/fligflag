@@ -1,6 +1,12 @@
-import type { GameConfig, GameState, Round, Guess, CountryTarget } from './types'
+import type { GameConfig, GameState, Round, Guess, CountryTarget, LatLon, GameMode } from './types'
 import { calculateScore } from './scoring'
 import { getDifficultyConfig } from './difficulty'
+
+const DELIMITER_SCORE_MULTIPLIER = 0.75
+
+export function getTargetLatLon(target: CountryTarget, mode: GameMode): LatLon {
+  return mode === 'capital' ? target.capitalLatLon : target.latLon
+}
 
 export function createGame(config: GameConfig): GameState {
   return {
@@ -63,15 +69,15 @@ export function submitGuess(state: GameState, guess: Guess): GameState {
     ? Math.max(0, difficultyConfig.timerSeconds - elapsedSeconds)
     : 0
 
-  const targetLatLon = state.config.mode === 'capital'
-    ? currentRound.target.capitalLatLon
-    : currentRound.target.latLon
+  const targetLatLon = getTargetLatLon(currentRound.target, state.config.mode)
+  const scoreMultiplier = state.config.showCountryDelimiters ? DELIMITER_SCORE_MULTIPLIER : 1
 
   const score = calculateScore(
     guess.latLon,
     targetLatLon,
     state.config.difficulty,
-    secondsLeft
+    secondsLeft,
+    scoreMultiplier
   )
 
   const rounds = state.rounds.map((round, index) => {
