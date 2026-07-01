@@ -18,6 +18,7 @@ interface GeoJSONFeature {
   properties: {
     'ISO3166-1-Alpha-3'?: string
     'ISO3166-1-Alpha-2'?: string
+    name?: string
   }
   geometry: GeoJSON.Geometry
 }
@@ -35,19 +36,30 @@ export async function loadCountries(): Promise<CountryRecord[]> {
 
   const geoData: GeoJSONFeatureCollection = await geoResponse.json()
   const geoMap = new Map<string, GeoJSONFeature>()
+  const geoByName = new Map<string, GeoJSONFeature>()
 
   for (const feature of geoData.features) {
     const alpha3 = feature.properties['ISO3166-1-Alpha-3']
-    if (alpha3) {
+    if (alpha3 && alpha3 !== '-99') {
       geoMap.set(alpha3, feature)
     }
+    if (feature.properties.name) {
+      geoByName.set(feature.properties.name, feature)
+    }
+  }
+
+  const nameOverrides: Record<string, string> = {
+    FRA: 'France',
+    NOR: 'Norway',
   }
 
   const records: CountryRecord[] = []
   let skipped = 0
 
   for (const country of countries as WorldCountry[]) {
+    const overrideName = nameOverrides[country.cca3]
     const geometry = geoMap.get(country.cca3)
+      ?? (overrideName ? geoByName.get(overrideName) : undefined)
     const capital = country.capital?.[0]
     
     if (!geometry || !capital) {
