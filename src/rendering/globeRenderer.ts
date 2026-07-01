@@ -7,10 +7,10 @@ const DAY_TEXTURE_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/e
 const NIGHT_TEXTURE_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_night_4096.jpg'
 const CLOUDS_TEXTURE_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_clouds_1024.png'
 
-const DAY_TEXTURE_TINT = 0xb0b0b0
+const DAY_TEXTURE_TINT = 0xd0d0d0
 const NIGHT_TEXTURE_TINT = 0xffffff
 const CLOUD_RADIUS = 1.006
-const CLOUD_OPACITY = 0.25
+const CLOUD_OPACITY = 0.15
 
 export class GlobeRenderer {
   private scene: THREE.Scene
