@@ -56,6 +56,7 @@ export class AppController {
     this.gameState = createGame(config)
     this.gameState = startGame(this.gameState, selectedTargets)
     this.settingsView.hide()
+    this.globeRenderer.setDifficulty(config.difficulty)
     this.globeRenderer.setCountryDelimiters(allTargets, config.showCountryDelimiters)
     this.startCurrentRound()
   }
@@ -90,6 +91,8 @@ export class AppController {
 
     if (config.timerSeconds !== null) {
       this.startTimer(config.timerSeconds)
+    } else {
+      this.gameView.clearTimer()
     }
   }
 

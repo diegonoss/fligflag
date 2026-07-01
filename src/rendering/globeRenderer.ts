@@ -1,7 +1,16 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { latLonToVector3, vector3ToLatLon } from '../geo/coordinates'
-import type { LatLon, CountryTarget } from '../domain/types'
+import type { LatLon, CountryTarget, Difficulty } from '../domain/types'
+
+const DAY_TEXTURE_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_day_4096.jpg'
+const NIGHT_TEXTURE_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_night_4096.jpg'
+const CLOUDS_TEXTURE_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_clouds_1024.png'
+
+const DAY_TEXTURE_TINT = 0xb0b0b0
+const NIGHT_TEXTURE_TINT = 0xffffff
+const CLOUD_RADIUS = 1.006
+const CLOUD_OPACITY = 0.25
 
 export class GlobeRenderer {
   private scene: THREE.Scene
@@ -10,10 +19,16 @@ export class GlobeRenderer {
   private controls: OrbitControls
   private raycaster: THREE.Raycaster
   private earth: THREE.Mesh
+  private earthMaterial: THREE.MeshPhongMaterial
+  private dayTexture: THREE.Texture
+  private nightTexture: THREE.Texture
+  private cloudTexture: THREE.Texture
+  private clouds: THREE.Mesh
   private onClickCallback?: (latLon: LatLon) => void
   private pointerStart: { x: number; y: number; time: number } | null = null
   private delimiterLines: THREE.LineSegments | null = null
   private answerMarker: THREE.Mesh | null = null
+  private handleKeyDownBound: (event: KeyboardEvent) => void = (event) => this.handleKeyDown(event)
 
   constructor(container: HTMLElement) {
     this.scene = new THREE.Scene()
@@ -35,22 +50,48 @@ export class GlobeRenderer {
     this.controls.dampingFactor = 0.05
     this.controls.minDistance = 1.5
     this.controls.maxDistance = 10
+    this.controls.enablePan = false
+    this.controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.ROTATE,
+    }
 
     this.raycaster = new THREE.Raycaster()
 
     const geometry = new THREE.SphereGeometry(1, 128, 64)
     const textureLoader = new THREE.TextureLoader()
-    const texture = textureLoader.load(
-      'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg'
-    )
-    texture.colorSpace = THREE.SRGBColorSpace
-    texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy()
-    const material = new THREE.MeshPhongMaterial({
-      map: texture,
+    const maxAnisotropy = this.renderer.capabilities.getMaxAnisotropy()
+
+    this.dayTexture = textureLoader.load(DAY_TEXTURE_URL)
+    this.dayTexture.colorSpace = THREE.SRGBColorSpace
+    this.dayTexture.anisotropy = maxAnisotropy
+
+    this.nightTexture = textureLoader.load(NIGHT_TEXTURE_URL)
+    this.nightTexture.colorSpace = THREE.SRGBColorSpace
+    this.nightTexture.anisotropy = maxAnisotropy
+
+    this.cloudTexture = textureLoader.load(CLOUDS_TEXTURE_URL)
+    this.cloudTexture.colorSpace = THREE.SRGBColorSpace
+    this.cloudTexture.anisotropy = maxAnisotropy
+
+    this.earthMaterial = new THREE.MeshPhongMaterial({
+      map: this.dayTexture,
+      color: DAY_TEXTURE_TINT,
       shininess: 5,
     })
-    this.earth = new THREE.Mesh(geometry, material)
+    this.earth = new THREE.Mesh(geometry, this.earthMaterial)
     this.scene.add(this.earth)
+
+    const cloudGeometry = new THREE.SphereGeometry(CLOUD_RADIUS, 128, 64)
+    const cloudMaterial = new THREE.MeshPhongMaterial({
+      map: this.cloudTexture,
+      opacity: CLOUD_OPACITY,
+      transparent: true,
+      depthWrite: false,
+    })
+    this.clouds = new THREE.Mesh(cloudGeometry, cloudMaterial)
+    this.scene.add(this.clouds)
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
     this.scene.add(ambientLight)
@@ -62,6 +103,7 @@ export class GlobeRenderer {
     window.addEventListener('resize', () => this.handleResize(container))
     this.renderer.domElement.addEventListener('pointerdown', (event: PointerEvent) => this.handlePointerDown(event))
     this.renderer.domElement.addEventListener('pointerup', (event: PointerEvent) => this.handlePointerUp(event, container))
+    window.addEventListener('keydown', this.handleKeyDownBound)
 
     this.animate()
   }
@@ -112,6 +154,18 @@ export class GlobeRenderer {
     }
   }
 
+  private handleKeyDown(event: KeyboardEvent): void {
+    if (event.code !== 'Space' || event.repeat) return
+    const target = event.target as HTMLElement | null
+    if (target) {
+      const tag = target.tagName
+      if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA' || tag === 'BUTTON') return
+      if (target.isContentEditable) return
+    }
+    event.preventDefault()
+    this.controls.reset()
+  }
+
   private animate(): void {
     requestAnimationFrame(() => this.animate())
     this.controls.update()
@@ -124,6 +178,17 @@ export class GlobeRenderer {
 
   public getScene(): THREE.Scene {
     return this.scene
+  }
+
+  public setDifficulty(difficulty: Difficulty): void {
+    if (difficulty === 'hard') {
+      this.earthMaterial.map = this.nightTexture
+      this.earthMaterial.color.setHex(NIGHT_TEXTURE_TINT)
+    } else {
+      this.earthMaterial.map = this.dayTexture
+      this.earthMaterial.color.setHex(DAY_TEXTURE_TINT)
+    }
+    this.earthMaterial.needsUpdate = true
   }
 
   public setCountryDelimiters(targets: CountryTarget[], enabled: boolean): void {
@@ -198,13 +263,17 @@ export class GlobeRenderer {
   }
 
   public dispose(): void {
+    window.removeEventListener('keydown', this.handleKeyDownBound)
     this.clearAnswerMarker()
     this.clearDelimitersLines()
     if (this.earth.geometry) this.earth.geometry.dispose()
-    const earthMaterial = this.earth.material
-    if (earthMaterial instanceof THREE.MeshPhongMaterial) {
-      if (earthMaterial.map) earthMaterial.map.dispose()
-      earthMaterial.dispose()
+    this.earthMaterial.dispose()
+    this.dayTexture.dispose()
+    this.nightTexture.dispose()
+    this.cloudTexture.dispose()
+    this.clouds.geometry.dispose()
+    if (this.clouds.material instanceof THREE.Material) {
+      this.clouds.material.dispose()
     }
     this.renderer.dispose()
     this.controls.dispose()

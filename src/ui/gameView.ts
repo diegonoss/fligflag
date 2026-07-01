@@ -42,6 +42,10 @@ export class GameView {
     this.timerDisplay.textContent = `${secondsLeft}s`
   }
 
+  public clearTimer(): void {
+    this.timerDisplay.textContent = ''
+  }
+
   public updateScore(score: number): void {
     this.scoreDisplay.textContent = `Score: ${score}`
   }
