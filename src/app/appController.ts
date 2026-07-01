@@ -6,6 +6,7 @@ import { loadCountries } from '../data/loadCountries'
 import type { CountryRecord } from '../data/countryTypes'
 import { createGame, startGame, startRound, submitGuess, advanceRound, getTargetLatLon } from '../domain/gameEngine'
 import { getDifficultyConfig } from '../domain/difficulty'
+import { selectRoundTargets } from '../domain/targetSelection'
 import type { GameConfig, GameState, CountryTarget, LatLon } from '../domain/types'
 
 export class AppController {
@@ -40,8 +41,7 @@ export class AppController {
   }
 
   private startGame(config: GameConfig): void {
-    const shuffled = [...this.countries].sort(() => Math.random() - 0.5)
-    const targets: CountryTarget[] = shuffled.map((country) => ({
+    const allTargets: CountryTarget[] = this.countries.map((country) => ({
       id: country.cca3,
       name: country.name,
       capital: country.capital,
@@ -51,10 +51,12 @@ export class AppController {
       geometry: country.geometry,
     }))
 
+    const selectedTargets = selectRoundTargets(allTargets, config.difficulty, config.rounds)
+
     this.gameState = createGame(config)
-    this.gameState = startGame(this.gameState, targets)
+    this.gameState = startGame(this.gameState, selectedTargets)
     this.settingsView.hide()
-    this.globeRenderer.setCountryDelimiters(targets, config.showCountryDelimiters)
+    this.globeRenderer.setCountryDelimiters(allTargets, config.showCountryDelimiters)
     this.startCurrentRound()
   }
 

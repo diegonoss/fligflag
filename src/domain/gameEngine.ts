@@ -71,13 +71,15 @@ export function submitGuess(state: GameState, guess: Guess): GameState {
 
   const targetLatLon = getTargetLatLon(currentRound.target, state.config.mode)
   const scoreMultiplier = state.config.showCountryDelimiters ? DELIMITER_SCORE_MULTIPLIER : 1
+  const targetGeometry = state.config.mode === 'country' ? currentRound.target.geometry : undefined
 
   const score = calculateScore(
     guess.latLon,
     targetLatLon,
     state.config.difficulty,
     secondsLeft,
-    scoreMultiplier
+    scoreMultiplier,
+    targetGeometry
   )
 
   const rounds = state.rounds.map((round, index) => {

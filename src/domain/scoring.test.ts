@@ -64,4 +64,35 @@ describe('scoring', () => {
     expect(defaultResult.baseScore).toBe(explicitResult.baseScore)
     expect(defaultResult.totalScore).toBe(explicitResult.totalScore)
   })
+
+  it('returns low base score for guess several countries away', () => {
+    const guess: LatLon = { lat: 52.52, lon: 13.405 } // Berlin, Germany
+    const result = calculateScore(guess, targetLatLon, 'easy', 0)
+    expect(result.baseScore).toBeLessThan(250)
+    expect(result.baseScore).toBeGreaterThanOrEqual(0)
+  })
+
+  it('returns zero base score for very far guess', () => {
+    const guess: LatLon = { lat: -33.8688, lon: 151.2093 } // Sydney, Australia
+    const result = calculateScore(guess, targetLatLon, 'easy', 0)
+    expect(result.baseScore).toBe(0)
+  })
+
+  it('caps normal time bonus at 10% of base score for instant answer', () => {
+    const guess: LatLon = { lat: 40.4168, lon: -3.7038 }
+    const result = calculateScore(guess, targetLatLon, 'normal', 30)
+    expect(result.timeBonus).toBe(100)
+  })
+
+  it('gives half time bonus at half timer remaining on hard mode', () => {
+    const guess: LatLon = { lat: 40.4168, lon: -3.7038 }
+    const result = calculateScore(guess, targetLatLon, 'hard', 5)
+    expect(result.timeBonus).toBe(50)
+  })
+
+  it('caps time bonus even with excessive secondsLeft', () => {
+    const guess: LatLon = { lat: 40.4168, lon: -3.7038 }
+    const result = calculateScore(guess, targetLatLon, 'hard', 999)
+    expect(result.timeBonus).toBe(100)
+  })
 })

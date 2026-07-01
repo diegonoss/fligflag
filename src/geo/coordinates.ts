@@ -20,7 +20,7 @@ export function vector3ToLatLon(vector: THREE.Vector3): LatLon {
   const theta = Math.atan2(vector.z, -vector.x)
 
   const lat = 90 - (phi * 180) / Math.PI
-  const lon = (theta * 180) / Math.PI - 180
+  const lon = ((theta * 180) / Math.PI - 180 + 540) % 360 - 180
 
   return { lat, lon }
 }

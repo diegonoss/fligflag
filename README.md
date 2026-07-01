@@ -48,8 +48,8 @@ During gameplay, click "Show Answer" to reveal the correct answer location on th
 ### Scoring
 
 - Base score: 1000 points for exact location
-- Distance decay: Score decreases with distance
-- Time bonus: 10% of base score per second remaining (Normal/Hard only)
+- Distance decay: Score decreases quadratically with distance, reaching zero for far misses
+- Time bonus: Max 10% of base score, scaled by fraction of timer remaining (Normal/Hard only)
 
 ## Architecture
 
