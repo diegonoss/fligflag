@@ -12,39 +12,50 @@ export class SettingsView {
 
   private render(): void {
     this.panel.innerHTML = `
-      <h2>Game Settings</h2>
-      <div>
-        <label for="difficulty">Difficulty:</label>
-        <select id="difficulty">
-          <option value="easy">Easy</option>
-          <option value="normal" selected>Normal</option>
-          <option value="hard">Hard</option>
-        </select>
+      <div class="settings-title">
+        <h1>FligFlag</h1>
+        <p class="settings-subtitle">Geography Challenge</p>
       </div>
-      <div>
-        <label for="mode">Mode:</label>
-        <select id="mode">
-          <option value="country" selected>Country</option>
-          <option value="capital">Capital</option>
-        </select>
+      <div class="settings-section">
+        <h3 class="settings-section-title">Difficulty &amp; Mode</h3>
+        <div>
+          <label for="difficulty">Difficulty:</label>
+          <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div>
+          <label for="mode">Mode:</label>
+          <select id="mode">
+            <option value="country" selected>Country</option>
+            <option value="capital">Capital</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label for="rounds">Rounds:</label>
-        <select id="rounds">
-          <option value="5">5</option>
-          <option value="10" selected>10</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-        </select>
+      <div class="settings-section">
+        <h3 class="settings-section-title">Game Settings</h3>
+        <div>
+          <label for="rounds">Rounds:</label>
+          <select id="rounds">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" id="country-delimiters" />
+            Show country borders (score reduced to 75%)
+          </label>
+        </div>
       </div>
-      <div>
-        <label>
-          <input type="checkbox" id="country-delimiters" />
-          Show country borders (score reduced to 75%)
-        </label>
+      <div class="settings-actions">
+        <button id="start-game" class="primary-button">Start Game</button>
+        <button id="settings-help-button" class="help-trigger-button">How to Play</button>
       </div>
-      <button id="start-game">Start Game</button>
-      <button id="settings-help-button" class="help-trigger-button">How to Play</button>
     `
 
     const button = document.getElementById('start-game')!

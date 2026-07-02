@@ -96,3 +96,59 @@ describe('SettingsView — help integration', () => {
     expect(() => view.showHelp()).not.toThrow()
   })
 })
+
+describe('SettingsView — menu polish', () => {
+  it('renders a game title section with branding class', async () => {
+    const { SettingsView } = await import('./settingsView')
+    new SettingsView()
+
+    const html = panel.innerHTML as string
+    expect(html).toContain('settings-title')
+    expect(html).toContain('FligFlag')
+  })
+
+  it('renders a subtitle / intro line below the title', async () => {
+    const { SettingsView } = await import('./settingsView')
+    new SettingsView()
+
+    const html = panel.innerHTML as string
+    expect(html).toContain('settings-subtitle')
+  })
+
+  it('groups difficulty and mode into a labelled section', async () => {
+    const { SettingsView } = await import('./settingsView')
+    new SettingsView()
+
+    const html = panel.innerHTML as string
+    expect(html).toContain('settings-section')
+    expect(html).toContain('Difficulty')
+    expect(html).toContain('Mode')
+  })
+
+  it('groups rounds and options into a separate labelled section', async () => {
+    const { SettingsView } = await import('./settingsView')
+    new SettingsView()
+
+    const html = panel.innerHTML as string
+    // Two distinct sections in the rendered HTML
+    const sectionCount = (html.match(/settings-section/g) || []).length
+    expect(sectionCount).toBeGreaterThanOrEqual(2)
+  })
+
+  it('uses a primary CTA class on the Start Game button', async () => {
+    const { SettingsView } = await import('./settingsView')
+    new SettingsView()
+
+    const html = panel.innerHTML as string
+    expect(html).toContain('primary-button')
+    expect(html).toContain('Start Game')
+  })
+
+  it('renders the action area with both buttons inside an actions container', async () => {
+    const { SettingsView } = await import('./settingsView')
+    new SettingsView()
+
+    const html = panel.innerHTML as string
+    expect(html).toContain('settings-actions')
+  })
+})

@@ -27,9 +27,10 @@ export class AppController {
     this.gameView = new GameView()
     this.settingsView = new SettingsView()
 
-    // Wire the help modal to the settings view
+    // Wire the help modal to both settings and game views
     const helpModal = new HelpModal(document.body)
     this.settingsView.setHelpModal(helpModal)
+    this.gameView.setHelpModal(helpModal)
 
     this.settingsView.onStart((config) => this.startGame(config))
     this.globeRenderer.onClick((latLon) => this.handleGlobeClick(latLon))

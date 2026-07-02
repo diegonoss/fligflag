@@ -26,44 +26,113 @@ body {
   z-index: 1;
 }
 
+/* =====================================================================
+   HUD (in-game overlay)
+   ===================================================================== */
+
 #hud-container {
   position: absolute;
   top: 20px;
   left: 20px;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 12px;
-  min-width: 200px;
+  background: rgba(10, 10, 30, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 18px;
+  border-radius: 14px;
+  min-width: 210px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 #flag-display {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 #flag-display img {
   max-width: 200px;
   height: auto;
-  border: 2px solid #fff;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
 }
 
 #timer-display {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
 }
 
 #score-display {
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 16px;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 #round-display {
-  font-size: 16px;
-  opacity: 0.8;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
 }
+
+/* HUD help button */
+.hud-help-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+  padding: 0;
+}
+
+.hud-help-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.hud-help-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.4);
+}
+
+/* Controls hint strip */
+#controls-hint {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  line-height: 1.5;
+}
+
+.hint-icon {
+  font-size: 13px;
+}
+
+.hint-separator {
+  color: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+}
+
+/* =====================================================================
+   Settings / Menu Panel
+   ===================================================================== */
 
 #settings-panel {
   position: absolute;
@@ -71,110 +140,203 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 20;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 40px;
-  border-radius: 16px;
-  min-width: 300px;
+  background: rgba(10, 10, 30, 0.95);
+  backdrop-filter: blur(16px);
+  padding: 40px 36px;
+  border-radius: 20px;
+  min-width: 340px;
+  max-width: 400px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
 }
 
-#settings-panel h2 {
-  margin-bottom: 24px;
+/* Title area */
+.settings-title {
   text-align: center;
+  margin-bottom: 28px;
 }
 
-#settings-panel > div {
-  margin-bottom: 16px;
+.settings-title h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 0;
+  background: linear-gradient(135deg, #4a90e2, #7b68ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
+.settings-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 6px 0 0;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Section grouping */
+.settings-section {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.settings-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 14px;
+  font-weight: 600;
+}
+
+.settings-section > div {
+  margin-bottom: 14px;
+}
+
+.settings-section > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels */
 #settings-panel label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 #settings-panel select {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border: 2px solid #fff;
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
-  background: #000;
+  background: rgba(0, 0, 0, 0.4);
   color: #fff;
   cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+#settings-panel select:hover {
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 #settings-panel select:focus {
-  outline: 2px solid #4a90e2;
-  outline-offset: 2px;
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
 }
 
-#settings-panel button {
-  width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  font-weight: bold;
-  background: #4a90e2;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 8px;
-  min-height: 48px;
-}
-
-#settings-panel button:hover {
-  background: #357abd;
-}
-
-#settings-panel button:focus {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
-
-#settings-panel .help-trigger-button {
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #ccc;
-  font-weight: 500;
-  margin-top: 12px;
-}
-
-#settings-panel .help-trigger-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
-  color: #fff;
-}
-
+/* Checkbox */
 #settings-panel label input[type="checkbox"] {
   margin-right: 8px;
   width: 18px;
   height: 18px;
   vertical-align: middle;
   cursor: pointer;
+  accent-color: #4a90e2;
 }
+
+/* Actions area */
+.settings-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Primary CTA */
+#settings-panel .primary-button {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4a90e2, #7b68ee);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  min-height: 52px;
+  letter-spacing: 1px;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.25);
+}
+
+#settings-panel .primary-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+#settings-panel .primary-button:active {
+  transform: translateY(0);
+}
+
+#settings-panel .primary-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.4), 0 4px 16px rgba(74, 144, 226, 0.25);
+}
+
+/* Secondary / Help button */
+#settings-panel .help-trigger-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all 0.2s;
+}
+
+#settings-panel .help-trigger-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+#settings-panel .help-trigger-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+/* =====================================================================
+   Debug & Results
+   ===================================================================== */
 
 #debug-answer-button {
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  padding: 8px;
+  font-size: 12px;
   font-weight: 500;
-  background: #e74c3c;
-  color: #fff;
-  border: none;
+  background: rgba(231, 76, 60, 0.15);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  color: rgba(255, 255, 255, 0.6);
   border-radius: 8px;
   cursor: pointer;
   margin-top: 12px;
-  min-height: 44px;
+  min-height: 36px;
+  transition: all 0.2s;
 }
 
 #debug-answer-button:hover {
-  background: #c0392b;
+  background: rgba(231, 76, 60, 0.25);
+  border-color: rgba(231, 76, 60, 0.5);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 #debug-answer-button:focus {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3);
 }
 
 #results-panel {
@@ -183,11 +345,13 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 20;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(10, 10, 30, 0.95);
+  backdrop-filter: blur(16px);
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 20px;
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
 }
 
 #results-panel:empty {
@@ -196,32 +360,41 @@ body {
 
 #results-panel h2 {
   margin-bottom: 16px;
+  font-size: 28px;
+  background: linear-gradient(135deg, #4a90e2, #7b68ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 #results-panel p {
   font-size: 24px;
   margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 #results-panel button {
-  padding: 16px 32px;
-  font-size: 18px;
-  font-weight: bold;
-  background: #4a90e2;
+  padding: 14px 32px;
+  font-size: 17px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4a90e2, #7b68ee);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   min-height: 48px;
+  letter-spacing: 1px;
+  transition: opacity 0.2s, transform 0.1s;
 }
 
 #results-panel button:hover {
-  background: #357abd;
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 #results-panel button:focus {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -229,28 +402,49 @@ body {
     top: 10px;
     left: 10px;
     padding: 12px;
-    min-width: 150px;
+    min-width: 160px;
   }
 
   #flag-display img {
-    max-width: 150px;
+    max-width: 140px;
   }
 
   #timer-display {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   #score-display {
-    font-size: 16px;
-  }
-
-  #round-display {
     font-size: 14px;
   }
 
+  #round-display {
+    font-size: 12px;
+  }
+
+  #controls-hint {
+    font-size: 10px;
+  }
+
   #settings-panel {
+    padding: 24px 20px;
+    min-width: 290px;
+  }
+
+  .settings-title h1 {
+    font-size: 26px;
+  }
+
+  .help-modal {
     padding: 24px;
-    min-width: 280px;
+    max-width: 320px;
+  }
+
+  .help-modal-content h2 {
+    font-size: 20px;
+  }
+
+  .help-modal-controls li {
+    font-size: 14px;
   }
 }
 
@@ -363,19 +557,4 @@ kbd {
   box-shadow: 0 2px 0 #999, 0 3px 4px rgba(0, 0, 0, 0.3);
   line-height: 1.6;
   white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-  .help-modal {
-    padding: 24px;
-    max-width: 320px;
-  }
-
-  .help-modal-content h2 {
-    font-size: 20px;
-  }
-
-  .help-modal-controls li {
-    font-size: 14px;
-  }
 }
