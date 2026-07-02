@@ -3,6 +3,7 @@ import type { GameConfig, Difficulty, GameMode } from '../domain/types'
 export class SettingsView {
   private panel: HTMLElement
   private onStartCallback?: (config: GameConfig) => void
+  private helpModal?: { show(): void; hide(): void }
 
   constructor() {
     this.panel = document.getElementById('settings-panel')!
@@ -43,10 +44,14 @@ export class SettingsView {
         </label>
       </div>
       <button id="start-game">Start Game</button>
+      <button id="settings-help-button" class="help-trigger-button">How to Play</button>
     `
 
     const button = document.getElementById('start-game')!
     button.addEventListener('click', () => this.handleStart())
+
+    const helpButton = document.getElementById('settings-help-button')!
+    helpButton.addEventListener('click', () => this.showHelp())
   }
 
   private handleStart(): void {
@@ -75,5 +80,13 @@ export class SettingsView {
 
   public show(): void {
     this.panel.style.display = 'block'
+  }
+
+  public setHelpModal(modal: { show(): void; hide(): void }): void {
+    this.helpModal = modal
+  }
+
+  public showHelp(): void {
+    this.helpModal?.show()
   }
 }

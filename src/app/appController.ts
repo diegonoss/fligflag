@@ -2,6 +2,7 @@ import { GlobeRenderer } from '../rendering/globeRenderer'
 import { Starfield } from '../rendering/starfield'
 import { GameView } from '../ui/gameView'
 import { SettingsView } from '../ui/settingsView'
+import { HelpModal } from '../ui/helpModal'
 import { loadCountries } from '../data/loadCountries'
 import type { CountryRecord } from '../data/countryTypes'
 import { createGame, startGame, startRound, submitGuess, advanceRound, getTargetLatLon } from '../domain/gameEngine'
@@ -25,6 +26,10 @@ export class AppController {
     this.starfield = new Starfield(this.globeRenderer.getScene())
     this.gameView = new GameView()
     this.settingsView = new SettingsView()
+
+    // Wire the help modal to the settings view
+    const helpModal = new HelpModal(document.body)
+    this.settingsView.setHelpModal(helpModal)
 
     this.settingsView.onStart((config) => this.startGame(config))
     this.globeRenderer.onClick((latLon) => this.handleGlobeClick(latLon))
